@@ -19,9 +19,6 @@
 
 > **Note:** You can find a document explaining difference between BGP and OSPF [here](https://community.fs.com/fr/blog/ospf-vs-bgp-routing-protocol-choice.html)
 
-## Now, we need to create a topology
--   We need to create a topology with 2 routers and 2 switches. We will connect the routers to the switches and the switches to the routers. We will also connect the routers to each other.
-
 ## Now, we need to create the dockerfiles
 
 -  First dockerfile containing BusyBox
