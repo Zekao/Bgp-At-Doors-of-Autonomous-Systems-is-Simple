@@ -1,8 +1,8 @@
 # Part 1
 
 #### GNS3 CONFIGURATION WITH DOCKER
--   First of all, we need to install GNS3 on our machine. You can download it from [here](https://www.gns3.com/software/download).
--   After installing GNS3, we need to install Docker. You can download it from [here](https://www.docker.com/products/docker-desktop).
+-   First of all, we need to install GNS3 on our machine. You can download it from [here](https://docs.gns3.com/docs/getting-started/installation/linux/).
+-   After installing GNS3, we need to install Docker. You can download it from [here](https://docs.docker.com/engine/install/ubuntu/).
 
 ## First of all, we need to create two images
 -   A first image with a system of our choice (in my case, I used alpine:3.14)
