@@ -66,3 +66,127 @@ ospfd -d && isisd -d && bgpd -d && zebra -d
 
 ### DISCOVERING A VXLAN
 
+First of all, we need to create the same network topology on GNS3 as the one in the subject
+
+![image](https://zekao.s-ul.eu/L621xIr3.png)
+
+- We need to configurate the routers with the following commands in order to set up the VXLAN
+
+```bash
+# R1
+    vtysh # network configuration
+    conf t # enter configuration mode
+    ip forwarding # enable the ip forwarding
+    int eth1 # select the interface
+    no sh # disable the shutdown
+    ip address 32.1.1.253/24 # set the ip address
+    int eth0 # select the interface
+    no sh # disable the shutdown
+    ip address 30.1.1.253/24 # set the ip address
+    do write # apply the configuration
+    exit # exit the configuration mode
+    exit # exit the vtysh mode
+
+    # eth0 will be the interface for the VXLAN
+
+# R1 -> Unicast Routing
+ip link add vxlan10 type vxlan id 10 remote 30.1.1.253 dstport 4789 dev eth0 #  distant ip address where the packet will be sent in port 4789
+ip link set vxlan10 up
+ip addr add 32.1.1.253/24 dev vxlan10
+
+# R2
+    vtysh # network configuration
+    conf t # enter configuration mode
+    ip forwarding # enable the ip forwarding
+    int eth1 # select the interface
+    no sh # disable the shutdown
+    ip address 32.1.1.254/24 # set the ip address
+    int eth0 # select the interface
+    no sh # disable the shutdown
+    ip address 30.1.1.254/24 # set the ip address
+    do write # apply the configuration
+    exit # exit the configuration mode
+    exit # exit the vtysh mode
+
+    # eth0 will be the interface for the VXLAN
+
+# R2 -> Unicast Routing
+ip link add vxlan10 type vxlan id 10 remote 30.1.1.254 dstport 4789 dev eth0 # distant ip address where the packet will be sent in port 4789
+ip link set vxlan10 up
+ip addr add 32.1.1.254/24 dev vxlan10
+```
+- Then, we need to create a bridge in order to connect the link vxlan10 to the eth1 interface to have the same traffic 
+
+```bash
+# R1
+ip link add name br0 type bridge
+ip link set br0 up
+ip link set vxlan10 master br0
+ip link set eth1 master br0
+
+# R2
+
+ip link add name br0 type bridge
+ip link set br0 up
+ip link set vxlan10 master br0
+ip link set eth1 master br0
+```
+
+- Now, we need to configure the hosts
+
+```bash
+# H1
+ip addr add 32.1.1.1/24 dev eth1
+route add default gw 32.1.1.254 
+
+# H2
+ip addr add 32.1.1.2/24 dev eth1
+route add default gw 32.1.1.253
+```
+
+- Now, we can ping the hosts
+
+```bash
+# From H1
+ping 32.1.1.2
+``` 
+![image](https://zekao.s-ul.eu/Pok9h4FF.png)
+
+#### We can also analyze the traffic with Wireshark to see if the VXLAN is correctly working
+
+![image](https://zekao.s-ul.eu/TKVjZHsU.png)
+
+
+## Now, we will need to setup the multicast routing
+
+First of all, we need to understand what is the multicast routing
+
+- The unicast routing is used to send a packet to a specific destination. The packet will be sent to the destination IP address. The unicast routing is used for the majority of the network traffic.
+
+- The multicast routing is used to send a packet to a group of destination. The packet will be sent to the multicast IP address. The multicast routing is used for the network traffic that needs to be sent to a group of destination.
+
+- The broadcast routing is used to send a packet to all the destination. The packet will be sent to the broadcast IP address. The broadcast routing is used for the network traffic that needs to be sent to all the destination.
+
+![image](https://techterms.com/img/xl/multicast_946.png)
+
+#### Now, we need to configure the multicast routing
+
+```bash
+# R1
+ip link del vxlan10 # delete the unicast vxlan
+ip link add vxlan10 type vxlan id 10 dstport 4789 group 239.1.1.1 dev eth0 ttl auto # 239.1.1.1 will communicate with 30.1.1.254 in the port 4789 with auto ttl for the packets
+ip link set up dev vxlan10
+ip addr add 32.1.1.254/24 dev vxlan10
+
+# R2
+ip link del vxlan10 # delete the unicast vxlan
+ip link add vxlan10 type vxlan id 10 dstport 4789 group 239.1.1.1 dev eth0 ttl auto # 239.1.1.1 will communicate with 30.1.1.253 in the port 4789 with auto ttl for the packets
+ip link set up dev vxlan10
+ip addr add 32.1.1.253/24 dev vxlan10
+```
+
+
+
+--------------------
+
+# Part 3
