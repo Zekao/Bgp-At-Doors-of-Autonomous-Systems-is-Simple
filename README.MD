@@ -173,13 +173,13 @@ First of all, we need to understand what is the multicast routing
 
 ```bash
 # R1
-ip link del vxlan10 # delete the unicast vxlan
+ip link delete vxlan10 # delete the unicast vxlan
 ip link add vxlan10 type vxlan id 10 dstport 4789 group 239.1.1.1 dev eth0 ttl auto # 239.1.1.1 will communicate with 30.1.1.254 in the port 4789 with auto ttl for the packets
 ip link set up dev vxlan10
 ip addr add 32.1.1.254/24 dev vxlan10
 
 # R2
-ip link del vxlan10 # delete the unicast vxlan
+ip link delete vxlan10 # delete the unicast vxlan
 ip link add vxlan10 type vxlan id 10 dstport 4789 group 239.1.1.1 dev eth0 ttl auto # 239.1.1.1 will communicate with 30.1.1.253 in the port 4789 with auto ttl for the packets
 ip link set up dev vxlan10
 ip addr add 32.1.1.253/24 dev vxlan10
