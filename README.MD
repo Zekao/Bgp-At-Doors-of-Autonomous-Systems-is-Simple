@@ -190,3 +190,25 @@ ip addr add 32.1.1.253/24 dev vxlan10
 --------------------
 
 # Part 3
+
+### Discovering BGP with EVPN
+
+First of all, we need to create the same network topology on GNS3 as the one in the subject
+
+![image](https://zekao.s-ul.eu/if1xh6zj.png)
+
+Before starting, we need to understand all the different notions and what is BGP
+
+## What is BGP ?
+
+Border Gateway Protocol (BGP) is the postal service of the Internet.
+It will choose the fastest efficient route to deliver the different packages to the client using an internal AS routing protocol
+
+## What is an Autonomous System (AS)
+
+The Internet is a network of networks, and autonomous systems are the big networks that make up the Internet. More specifically, an autonomous system (AS) is a large network or group of networks that has a unified routing policy. Every computer or device that connects to the Internet is connected to an AS.
+
+## What is OSPF
+
+Open Shortest Path First (OSPF) is a route protocol that will find the fastest path to transfer datas 
+
