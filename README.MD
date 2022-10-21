@@ -204,11 +204,23 @@ Before starting, we need to understand all the different notions and what is BGP
 Border Gateway Protocol (BGP) is the postal service of the Internet.
 It will choose the fastest efficient route to deliver the different packages to the client using an internal AS routing protocol
 
-## What is an Autonomous System (AS)
+## What is an Autonomous System (AS) ?
 
 The Internet is a network of networks, and autonomous systems are the big networks that make up the Internet. More specifically, an autonomous system (AS) is a large network or group of networks that has a unified routing policy. Every computer or device that connects to the Internet is connected to an AS.
 
-## What is OSPF
+## What is OSPF?
 
 Open Shortest Path First (OSPF) is a route protocol that will find the fastest path to transfer datas 
+
+## What is EVPN?
+
+EVPN (Ethernet VPN) is a technology for carrying layer 2 Ethernet traffic in a VPN using WAN  protocols (Wide area network)
+
+## Then, what is BGP with EVPN?
+
+BGP EVPN is a protocol to resolve efficiently those two different aspects without using multicast or learning the source address 
+
+A BGP EVPN network is a network that uses BGP to exchange the MAC address table between the different routers. The MAC address table is used to know where to send the packet to the destination.
+
+![image](https://d2pzklc15kok91.cloudfront.net/images/vxlan/vxlan-deployment-rr-v2.svg)
 
