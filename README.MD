@@ -1,4 +1,4 @@
-# Part 1
+     # Part 1
 
 #### GNS3 CONFIGURATION WITH DOCKER
 -   First of all, we need to install GNS3 on our machine. You can download it from [here](https://docs.gns3.com/docs/getting-started/installation/linux/).
@@ -208,6 +208,10 @@ It will choose the fastest efficient route to deliver the different packages to 
 
 The Internet is a network of networks, and autonomous systems are the big networks that make up the Internet. More specifically, an autonomous system (AS) is a large network or group of networks that has a unified routing policy. Every computer or device that connects to the Internet is connected to an AS.
 
+## What is a Reflector?
+
+A reflector is a BGP router that will reflect the BGP messages to the other BGP routers
+
 ## What is OSPF?
 
 Open Shortest Path First (OSPF) is a route protocol that will find the fastest path to transfer datas 
@@ -215,6 +219,7 @@ Open Shortest Path First (OSPF) is a route protocol that will find the fastest p
 ## What is EVPN?
 
 EVPN (Ethernet VPN) is a technology for carrying layer 2 Ethernet traffic in a VPN using WAN  protocols (Wide area network)
+
 
 ## Then, what is BGP with EVPN?
 
@@ -224,3 +229,88 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
 
 ![image](https://d2pzklc15kok91.cloudfront.net/images/vxlan/vxlan-deployment-rr-v2.svg)
 
+- Now, we need to configure all the different routers
+
+    - In a first time, we need to setup the VXLAN, same as the part 2
+        ```bash
+        #R2
+        
+        ip link add vxlan10 type vxlan id 10 dstport 4789
+        ip link set vxlan10 up
+
+        ip link add name br0 type bridge
+        ip link set br0 up
+        ip link set vxlan10 master br0
+        ip link set eth1 master br0
+        
+        ```
+    - After that, we will attribute ip address 10.1.1.2/30 to the eth1 interface and we will attribute to our loopback interface the ip address 1.1.1.1/32 and we will enable the BGP protocol on the route 1.1.1.1 as neighbor and finally, we will activate the EVPN on the router
+        ```bash
+        # R2
+        vtysh
+        enable
+        conf t
+        hostname routeur_nabentay_2
+        no ip forwarding
+        no ipv6 forwarding
+        int eth1
+        no sh
+        ip address 10.1.1.2/30
+        ip ospf area 0
+
+        int lo
+        ip address 1.1.1.2/32
+        ip ospf area 0
+
+        router bgp 1
+        neighbor 1.1.1.1 remote-as 1
+        neighbor 1.1.1.1 update-source lo
+        
+        address-family l2vpn evpn
+        neighbor 1.1.1.1 activate
+        advertise-all-vni
+        exit-address-family
+
+        router ospf 
+        do write
+        ```
+
+    - Now, we will configure the reflector
+        ```bash
+        # R1
+        vtysh
+        enable
+        conf t
+        hostname routeur_nabentay_1
+        no ip forwarding
+        no ipv6 forwarding
+        int eth1
+        no sh
+        ip address 10.1.1.1/30
+
+        int eth2
+        ip address 10.1.1.2/30
+
+        int eth3
+        ip address 10.1.1.3/30
+
+        int lo
+        ip address 1.1.1.1/32
+
+        router bgp 1
+        neighbor ibgp peer-group
+        neighbor ibgp remote-as 1
+        neighbor ibgp update-source lo
+        bgp listen range 1.1.1.0/29 peer-group ibgp
+
+        address-family l2vpn evpn
+        neighbor ibgp activate
+        neighbor ibgp route-reflector-client
+        exit-address-family
+
+        router ospf
+        network 0.0.0.0/0 area 0
+
+        line vty
+        do write
+        ```
