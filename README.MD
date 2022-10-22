@@ -242,20 +242,44 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
         ip link set br0 up
         ip link set vxlan10 master br0
         ip link set eth1 master br0
+
+        #R3
+        
+        ip link add vxlan10 type vxlan id 10 dstport 4789
+        ip link set vxlan10 up
+
+        ip link add name br0 type bridge
+        ip link set br0 up
+        ip link set vxlan10 master br0
+        ip link set eth1 master br0
+
+        #R4
+        
+        ip link add vxlan10 type vxlan id 10 dstport 4789
+        ip link set vxlan10 up
+
+        ip link add name br0 type bridge
+        ip link set br0 up
+        ip link set vxlan10 master br0
+        ip link set eth1 master br0
         
         ```
     - After that, we will attribute ip address 10.1.1.2/30 to the eth1 interface and we will attribute to our loopback interface the ip address 1.1.1.1/32 and we will enable the BGP protocol on the route 1.1.1.1 as neighbor and finally, we will activate the EVPN on the router
         ```bash
-        # R2
+        # R2 ip conf
         vtysh
         enable
         conf t
         hostname routeur_nabentay_2
-        no ip forwarding
         no ipv6 forwarding
         int eth1
         no sh
         ip address 10.1.1.2/30
+        ip ospf area 0
+
+        int eth0
+        no sh
+        ip address 20.1.1.254/24
         ip ospf area 0
 
         int lo
@@ -275,6 +299,72 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
         do write
         ```
 
+        ```bash
+        # R3 ip conf
+        vtysh
+        enable
+        conf t
+        hostname routeur_nabentay_3
+        no ipv6 forwarding
+        int eth2
+        no sh
+        ip address 10.1.1.6/30
+        ip ospf area 0
+
+        int eth0
+        no sh
+        ip address 20.1.1.253/24
+        ip ospf area 0
+
+        int lo
+        ip address 1.1.1.3/32
+        ip ospf area 0
+
+        router bgp 1
+        neighbor 1.1.1.1 remote-as 1
+        neighbor 1.1.1.1 update-source lo
+        
+        address-family l2vpn evpn
+        neighbor 1.1.1.1 activate
+        advertise-all-vni
+        exit-address-family
+
+        router ospf 
+        do write
+        ```
+        ```bash
+        # R4 ip conf
+        vtysh
+        enable
+        conf t
+        hostname routeur_nabentay_4
+        no ipv6 forwarding
+        int eth3
+        no sh
+        ip address 10.1.1.10/30
+        ip ospf area 0
+
+        int eth0
+        no sh
+        ip address 20.1.1.252/24
+        ip ospf area 0
+
+        int lo
+        ip address 1.1.1.4/32
+        ip ospf area 0
+
+        router bgp 1
+        neighbor 1.1.1.1 remote-as 1
+        neighbor 1.1.1.1 update-source lo
+        
+        address-family l2vpn evpn
+        neighbor 1.1.1.1 activate
+        advertise-all-vni
+        exit-address-family
+
+        router ospf 
+        do write
+        ```
     - Now, we will configure the reflector
         ```bash
         # R1
@@ -289,10 +379,10 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
         ip address 10.1.1.1/30
 
         int eth2
-        ip address 10.1.1.2/30
+        ip address 10.1.1.5/30
 
         int eth3
-        ip address 10.1.1.3/30
+        ip address 10.1.1.9/30
 
         int lo
         ip address 1.1.1.1/32
