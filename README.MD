@@ -412,3 +412,11 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
         line vty
         do write
         ```
+## Troubleshooting
+
+```bash
+do sh ip route # Return route used by router
+
+do sh bgp summary # Return a summary about bgp like neighboor, used routes...
+do sh bgp l2vpn evpn # Return bgp evpn type route that exist 
+```
