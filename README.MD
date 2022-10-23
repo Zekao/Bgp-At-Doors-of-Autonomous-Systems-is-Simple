@@ -208,6 +208,10 @@ It will choose the fastest efficient route to deliver the different packages to 
 
 The Internet is a network of networks, and autonomous systems are the big networks that make up the Internet. More specifically, an autonomous system (AS) is a large network or group of networks that has a unified routing policy. Every computer or device that connects to the Internet is connected to an AS.
 
+## What is a Loopback (LO) ?
+
+lo is the loopback interface. This is a special network interface that the system uses to communicate with itself.
+
 ## What is a Reflector?
 
 A reflector is a BGP router that will reflect the BGP messages to the other BGP routers
