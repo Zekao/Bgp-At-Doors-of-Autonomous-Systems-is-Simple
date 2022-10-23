@@ -216,6 +216,10 @@ lo is the loopback interface. This is a special network interface that the syste
 
 A reflector is a BGP router that will reflect the BGP messages to the other BGP routers
 
+## What is a Virtual Tunnel endpoint (VTEP)?
+
+The VXLAN Tunnel End Point (VTEP) is the VXLAN encapsulation point and is connected to a traffic source which may be a stand-alone server or virtual machine
+
 ## What is OSPF?
 
 Open Shortest Path First (OSPF) is a route protocol that will find the fastest path to transfer datas 
@@ -239,30 +243,30 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
         ```bash
         #R2
         
-        ip link add vxlan10 type vxlan id 10 dstport 4789
-        ip link set vxlan10 up
+        ip link add vxlan10 type vxlan id 10 dstport 4789 # create the vxlan interface
+        ip link set vxlan10 up # enable the vxlan
 
-        ip link add name br0 type bridge
+        ip link add name br0 type bridge # create the bridge
         ip link set br0 up
         ip link set vxlan10 master br0
         ip link set eth1 master br0
 
         #R3
         
-        ip link add vxlan10 type vxlan id 10 dstport 4789
-        ip link set vxlan10 up
+        ip link add vxlan10 type vxlan id 10 dstport 4789 # create the vxlan interface
+        ip link set vxlan10 up # enable the vxlan
 
-        ip link add name br0 type bridge
+        ip link add name br0 type bridge # create the bridge
         ip link set br0 up
         ip link set vxlan10 master br0
         ip link set eth1 master br0
 
         #R4
         
-        ip link add vxlan10 type vxlan id 10 dstport 4789
-        ip link set vxlan10 up
+        ip link add vxlan10 type vxlan id 10 dstport 4789 # create the vxlan interface
+        ip link set vxlan10 up # enable the vxlan
 
-        ip link add name br0 type bridge
+        ip link add name br0 type bridge # create the bridge
         ip link set br0 up
         ip link set vxlan10 master br0
         ip link set eth1 master br0
@@ -271,32 +275,32 @@ A BGP EVPN network is a network that uses BGP to exchange the MAC address table 
     - After that, we will attribute ip address 10.1.1.2/30 to the eth1 interface and we will attribute to our loopback interface the ip address 1.1.1.1/32 and we will enable the BGP protocol on the route 1.1.1.1 as neighbor and finally, we will activate the EVPN on the router
         ```bash
         # R2 ip conf
-        vtysh
-        enable
-        conf t
-        hostname routeur_nabentay_2
-        no ipv6 forwarding
-        int eth1
-        no sh
-        ip address 10.1.1.2/30
-        ip ospf area 0
+        vtysh # router CLI
+        enable 
+        conf t # configuration mode
+        hostname routeur_nabentay_2 # set the hostname
+        no ipv6 forwarding # disable ipv6
+        int eth1 # interface eth1
+        no sh # disable the shutdown
+        ip address 10.1.1.2/30 # set the ip address to the interface eth1
+        ip ospf area 0 # set the ospf area to 0
 
-        int eth0
-        no sh
-        ip address 20.1.1.254/24
-        ip ospf area 0
+        int eth0 # interface eth0
+        no sh # disable the shutdown
+        ip address 20.1.1.254/24 # set the ip address to the interface eth0 
+        ip ospf area 0 # set the ospf area to 0
 
-        int lo
-        ip address 1.1.1.2/32
-        ip ospf area 0
+        int lo # interface lo
+        ip address 1.1.1.2/32 # set the ip address to the interface lo
+        ip ospf area 0 # set the ospf area to 0
 
         router bgp 1
-        neighbor 1.1.1.1 remote-as 1
-        neighbor 1.1.1.1 update-source lo
+        neighbor 1.1.1.1 remote-as 1 # set the neighbor
+        neighbor 1.1.1.1 update-source lo # set the update source
         
-        address-family l2vpn evpn
-        neighbor 1.1.1.1 activate
-        advertise-all-vni
+        address-family l2vpn evpn # activate the EVPN
+        neighbor 1.1.1.1 activate # activate the neighbor
+        advertise-all-vni 
         exit-address-family
 
         router ospf 
