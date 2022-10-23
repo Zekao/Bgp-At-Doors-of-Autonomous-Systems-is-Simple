@@ -92,7 +92,7 @@ First of all, we need to create the same network topology on GNS3 as the one in 
 # R1 -> Unicast Routing
 ip link add vxlan10 type vxlan id 10 remote 30.1.1.253 dstport 4789 dev eth0 #  distant ip address where the packet will be sent in port 4789
 ip link set vxlan10 up
-ip addr add 32.1.1.253/24 dev vxlan10
+ip addr add 30.1.1.253/24 dev vxlan10
 
 # R2
     vtysh # router CLI
@@ -113,7 +113,7 @@ ip addr add 32.1.1.253/24 dev vxlan10
 # R2 -> Unicast Routing
 ip link add vxlan10 type vxlan id 10 remote 30.1.1.254 dstport 4789 dev eth0 # distant ip address where the packet will be sent in port 4789
 ip link set vxlan10 up
-ip addr add 32.1.1.254/24 dev vxlan10
+ip addr add 30.1.1.254/24 dev vxlan10
 ```
 - Then, we need to create a bridge in order to connect the link vxlan10 to the eth1 interface to have the same traffic 
 
