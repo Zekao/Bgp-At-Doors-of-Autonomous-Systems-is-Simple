@@ -1,0 +1,4 @@
+FROM frrouting/frr
+ENV DAEMONS="zebra bgpd ospfd isisd"
+COPY ./daemons.conf /etc/frr/daemons
+
