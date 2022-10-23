@@ -79,27 +79,6 @@ First of all, we need to create the same network topology on GNS3 as the one in 
     ip forwarding # enable ip forwarding
     int eth1 # select the interface
     no sh # enable interface
-    ip address 32.1.1.253/24 # set the ip address
-    int eth0 # select the interface
-    no sh # enable interface
-    ip address 30.1.1.253/24 # set the ip address
-    do write # apply the configuration
-    exit # exit the configuration mode
-    exit # exit the vtysh mode
-
-    # eth0 will be the interface for the VXLAN
-
-# R1 -> Unicast Routing
-ip link add vxlan10 type vxlan id 10 remote 30.1.1.253 dstport 4789 dev eth0 #  distant ip address where the packet will be sent in port 4789
-ip link set vxlan10 up
-ip addr add 32.1.1.253/24 dev vxlan10
-
-# R2
-    vtysh # router CLI
-    conf t # enter configuration mode
-    ip forwarding # enable ip forwarding
-    int eth1 # select the interface
-    no sh # enable interface
     ip address 32.1.1.254/24 # set the ip address
     int eth0 # select the interface
     no sh # enable interface
@@ -110,10 +89,31 @@ ip addr add 32.1.1.253/24 dev vxlan10
 
     # eth0 will be the interface for the VXLAN
 
+# R1 -> Unicast Routing
+ip link add vxlan10 type vxlan id 10 remote 30.1.1.253 dstport 4789 dev eth0 #  distant ip address where the packet will be sent in port 4789
+ip link set vxlan10 up
+ip addr add 32.1.1.254/24 dev vxlan10
+
+# R2
+    vtysh # router CLI
+    conf t # enter configuration mode
+    ip forwarding # enable ip forwarding
+    int eth1 # select the interface
+    no sh # enable interface
+    ip address 32.1.1.253/24 # set the ip address
+    int eth0 # select the interface
+    no sh # enable interface
+    ip address 30.1.1.253/24 # set the ip address
+    do write # apply the configuration
+    exit # exit the configuration mode
+    exit # exit the vtysh mode
+
+    # eth0 will be the interface for the VXLAN
+
 # R2 -> Unicast Routing
 ip link add vxlan10 type vxlan id 10 remote 30.1.1.254 dstport 4789 dev eth0 # distant ip address where the packet will be sent in port 4789
 ip link set vxlan10 up
-ip addr add 32.1.1.254/24 dev vxlan10
+ip addr add 32.1.1.253/24 dev vxlan10
 ```
 - Then, we need to create a bridge in order to connect the link vxlan10 to the eth1 interface to have the same traffic 
 
