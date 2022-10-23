@@ -1,4 +1,4 @@
-     # Part 1
+# Part 1
 
 #### GNS3 CONFIGURATION WITH DOCKER
 -   First of all, we need to install GNS3 on our machine. You can download it from [here](https://docs.gns3.com/docs/getting-started/installation/linux/).
